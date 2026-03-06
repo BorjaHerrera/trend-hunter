@@ -22,7 +22,7 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Create credentials.json
-        run: echo "${{ secrets.GOOGLE_CREDENTIALS_BASE64 }}" | base64 --decode > config/credentials.json
+        run: echo "${{ secrets.GOOGLE_CREDENTIALS_BASE64 }}" | base64 -d > config/credentials.json
 
       - name: Run Trend Hunter
         env:

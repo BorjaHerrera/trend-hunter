@@ -2,7 +2,7 @@ name: Daily Trend Hunter Report
 
 on:
   schedule:
-    - cron: '0 8 * * *'
+    - cron: '0 7 * * *'
   workflow_dispatch:
 
 jobs:
@@ -22,7 +22,8 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Create credentials.json
-        run: echo "${{ secrets.GOOGLE_CREDENTIALS_BASE64 }}" | base64 -d > config/credentials.json
+        run: |
+          echo "${{ secrets.GOOGLE_CREDENTIALS_BASE64 }}" | tr -d ' \n' | base64 -d > config/credentials.json
 
       - name: Run Trend Hunter
         env:

@@ -33,8 +33,8 @@ class LLMEnricher:
 
         # Si no hay tendencias relevantes usar las top N por score
         if filtered_df.empty:
-            logger.warning("No hay tendencias con keywords relevantes, usando top N por score")
-            filtered_df = df.head(top_n)
+          logger.info("No hay tendencias con keywords relevantes hoy")
+          return pd.DataFrame()
 
         insights = []
         for _, row in filtered_df.iterrows():

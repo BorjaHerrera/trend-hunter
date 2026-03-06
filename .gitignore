@@ -1,0 +1,16 @@
+venv/
+.env
+__pycache__/
+*.pyc
+
+# Credenciales Google
+config/credentials.json
+
+# Base de datos
+storage/trend_hunter.db
+
+# Mac
+.DS_Store
+
+# VS Code
+.vscode/

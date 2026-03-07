@@ -24,7 +24,7 @@ class EmailReporter:
             
             top_insights = insights_df.head(top_n)
 
-            subject = f"🔥 Trend Hunter Report — {datetime.now().strftime('%d/%m/%Y')}"
+            subject = f"Trend Hunter Report - {datetime.now().strftime('%d/%m/%Y')}"
             body = self._build_html(top_insights, trends_df)
 
             msg = MIMEMultipart("alternative")
@@ -75,15 +75,15 @@ class EmailReporter:
         return f"""
         <html>
         <body style="font-family:Arial,sans-serif;max-width:900px;margin:0 auto;padding:20px;">
-            <h1 style="color:#2c3e50;">🔥 Trend Hunter Report</h1>
-            <p style="color:#888;">{today} — Tendencias relevantes para localización e IA</p>
+            <h1 style="color:#2c3e50;">Trend Hunter Report</h1>
+            <p style="color:#888;">{today} - Tendencias relevantes para localizacion e IA</p>
             <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin-top:20px;">
                 <thead>
                     <tr style="background:#2c3e50;color:white;">
                         <th style="padding:12px;text-align:left;">Tendencia</th>
                         <th style="padding:12px;text-align:left;">Idea de contenido</th>
                         <th style="padding:12px;text-align:left;">Oportunidad</th>
-                        <th style="padding:12px;text-align:left;">Ángulo de negocio</th>
+                        <th style="padding:12px;text-align:left;">Angulo de negocio</th>
                         <th style="padding:12px;text-align:center;">Prioridad</th>
                     </tr>
                 </thead>

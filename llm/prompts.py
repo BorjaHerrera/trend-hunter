@@ -1,3 +1,24 @@
+def build_pre_filter_prompt(trends: list) -> str:
+    return f"""
+Analiza esta lista de tendencias de mercado.
+Selecciona aquellas que tengan CUALQUIER relación directa o indirecta con:
+- Tecnologías de IA (LLMs, generación de video/audio)
+- Sector de Media & Entertainment (Streaming, producción)
+- Localización y traducción (Software, servicios)
+- Voice cloning, síntesis de voz, doblaje automático
+- E-learning y formación online
+
+Si tienes dudas sobre una marca tecnológica (ej. NVIDIA, OpenAI, Runway, ElevenLabs), INCLÚYELA.
+Si es claramente entretenimiento, deporte, política o clima → EXCLÚYELA.
+
+Tendencias:
+{chr(10).join(f"- {t}" for t in trends)}
+
+Responde estrictamente en JSON sin markdown:
+{{"relevant": []}}
+"""
+
+
 def build_trend_analysis_prompt(trend: str, industry: str) -> str:
     return f"""
 Eres un CRÍTICO de inteligencia de mercado extremadamente selectivo. 
@@ -54,16 +75,16 @@ REGLAS ESTRICTAS DE ANÁLISIS
 6. Business_angle debe explicar:
    - Cómo la tendencia se conecta con AI media o localización
 
-6. Priority_level:
+7. Priority_level:
    - ALTA → tendencia en crecimiento + impacto directo en negocio
    - MEDIA → impacto indirecto
    - BAJA → relevancia débil
 
-7. Relevance score:
+8. Relevance score:
    - Número entre 0 y 10
    - 10 = oportunidad comercial muy fuerte
 
-8. IMPORTANTE:
+9. IMPORTANTE:
    - No inventes información
    - Si no estás seguro → marca is_relevant = false
    - Evita generar oportunidades ficticias

@@ -13,9 +13,9 @@ logger = logging.getLogger(__name__)
 class EmailReporter:
 
     def __init__(self):
-        self.sender = EMAIL_SENDER
-        self.password = EMAIL_PASSWORD
-        self.recipient = EMAIL_RECIPIENT
+        self.sender = EMAIL_SENDER.strip()
+        self.password = EMAIL_PASSWORD.strip()
+        self.recipient = EMAIL_RECIPIENT.strip()
 
     def _clean_text(self, text: str) -> str:
         if not text:
@@ -37,9 +37,9 @@ class EmailReporter:
             msg["From"] = self.sender
             msg["To"] = self.recipient
             msg.attach(MIMEText(body, "html", "utf-8"))
-            
-            logger.error(f"FROM: {repr(self.sender)}")
-            logger.error(f"TO: {repr(self.recipient)}")
+
+            logger.info(f"FROM: {repr(self.sender)}")
+            logger.info(f"TO: {repr(self.recipient)}")
 
             with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
                 server.login(self.sender, self.password)

@@ -43,11 +43,7 @@ class EmailReporter:
 
             with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
                 server.login(self.sender, self.password)
-                server.sendmail(
-                    self.sender,
-                    self.recipient,
-                    msg.as_bytes()
-                )
+                server.send_message(msg)
 
             logger.info(f"Email enviado a {self.recipient}")
 
@@ -111,4 +107,4 @@ class EmailReporter:
             </p>
         </body>
         </html>
-        """
+        """ 

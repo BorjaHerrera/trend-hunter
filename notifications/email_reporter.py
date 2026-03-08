@@ -29,7 +29,6 @@ class EmailReporter:
                 return
 
             top_insights = insights_df.head(top_n)
-
             subject = f"Trend Hunter Report {datetime.now().strftime('%d-%m-%Y')}"
             body = self._build_html(top_insights, trends_df)
 
@@ -41,12 +40,19 @@ class EmailReporter:
 
             with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
                 server.login(self.sender, self.password)
-                server.sendmail(self.sender, self.recipient, msg.as_string())
+                server.sendmail(
+                    self.sender,
+                    self.recipient,
+                    msg.as_bytes()
+                )
 
             logger.info(f"Email enviado a {self.recipient}")
 
         except Exception as e:
             logger.error(f"Error enviando email: {e}")
+            logger.error(f"Error type: {type(e)}")
+            body_bytes = body.encode('utf-8')
+            logger.error(f"Primeros 50 chars del body: {repr(body[:50])}")
 
     def _build_html(self, insights_df: pd.DataFrame, trends_df: pd.DataFrame) -> str:
         today = datetime.now().strftime("%d-%m-%Y")

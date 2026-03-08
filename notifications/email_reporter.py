@@ -3,6 +3,7 @@ import logging
 import pandas as pd
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.header import Header
 from datetime import datetime
 from config.settings import EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_RECIPIENT
 
@@ -29,11 +30,11 @@ class EmailReporter:
 
             top_insights = insights_df.head(top_n)
 
-            subject = f"Trend Hunter Report - {datetime.now().strftime('%d/%m/%Y')}"
+            subject = f"Trend Hunter Report {datetime.now().strftime('%d-%m-%Y')}"
             body = self._build_html(top_insights, trends_df)
 
             msg = MIMEMultipart("alternative")
-            msg["Subject"] = subject
+            msg["Subject"] = Header(subject, "utf-8")
             msg["From"] = self.sender
             msg["To"] = self.recipient
             msg.attach(MIMEText(body, "html", "utf-8"))
@@ -48,7 +49,7 @@ class EmailReporter:
             logger.error(f"Error enviando email: {e}")
 
     def _build_html(self, insights_df: pd.DataFrame, trends_df: pd.DataFrame) -> str:
-        today = datetime.now().strftime("%d/%m/%Y")
+        today = datetime.now().strftime("%d-%m-%Y")
         rows_html = ""
 
         for _, insight in insights_df.iterrows():
@@ -97,7 +98,7 @@ class EmailReporter:
                 </tbody>
             </table>
             <p style="color:#bbb;font-size:12px;margin-top:30px;">
-                Generado automáticamente por Trend Hunter Agent
+                Generado automaticamente por Trend Hunter Agent
             </p>
         </body>
         </html>

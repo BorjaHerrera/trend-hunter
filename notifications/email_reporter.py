@@ -83,7 +83,7 @@ class EmailReporter:
 
         rows_html = rows_html.encode('ascii', 'xmlcharrefreplace').decode('ascii')
 
-        return f"""
+        html = f"""
         <html>
         <body style="font-family:Arial,sans-serif;max-width:900px;margin:0 auto;padding:20px;">
             <h1 style="color:#2c3e50;">Trend Hunter Report</h1>
@@ -107,4 +107,6 @@ class EmailReporter:
             </p>
         </body>
         </html>
-        """ 
+        """
+
+        return html.encode('ascii', 'xmlcharrefreplace').decode('ascii')

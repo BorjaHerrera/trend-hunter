@@ -16,12 +16,17 @@ class EmailReporter:
         self.password = EMAIL_PASSWORD
         self.recipient = EMAIL_RECIPIENT
 
+    def _clean_text(self, text: str) -> str:
+        if not text:
+            return ""
+        return str(text).replace("\xa0", " ").replace("\u2019", "'").replace("\u2014", "-")
+
     def send_daily_report(self, insights_df: pd.DataFrame, trends_df: pd.DataFrame, top_n: int = 10):
         try:
             if insights_df.empty:
                 logger.warning("No hay insights para enviar")
                 return
-            
+
             top_insights = insights_df.head(top_n)
 
             subject = f"Trend Hunter Report - {datetime.now().strftime('%d/%m/%Y')}"
@@ -51,19 +56,19 @@ class EmailReporter:
             rank = trend_data.iloc[0].get("trend_rank", "-") if not trend_data.empty else "-"
             stage = trend_data.iloc[0].get("trend_stage", "-") if not trend_data.empty else "-"
             movement = trend_data.iloc[0].get("movement", 0) if not trend_data.empty else 0
-            movement_str = f"↑ +{movement}" if movement > 0 else f"↓ {movement}" if movement < 0 else "→ 0"
+            movement_str = f"up +{movement}" if movement > 0 else f"down {movement}" if movement < 0 else "= 0"
             priority = insight.get("priority_level", "BAJA")
             priority_color = "#e74c3c" if priority == "ALTA" else "#f39c12" if priority == "MEDIA" else "#95a5a6"
 
             rows_html += f"""
             <tr>
                 <td style="padding:12px;border-bottom:1px solid #eee;">
-                    <strong>{insight['trend']}</strong><br>
+                    <strong>{self._clean_text(insight['trend'])}</strong><br>
                     <small style="color:#888;">Rank #{rank} | {stage} | {movement_str}</small>
                 </td>
-                <td style="padding:12px;border-bottom:1px solid #eee;">{insight.get('content_idea', '')}</td>
-                <td style="padding:12px;border-bottom:1px solid #eee;">{insight.get('business_opportunity', '')}</td>
-                <td style="padding:12px;border-bottom:1px solid #eee;">{insight.get('business_angle', '')}</td>
+                <td style="padding:12px;border-bottom:1px solid #eee;">{self._clean_text(insight.get('content_idea', ''))}</td>
+                <td style="padding:12px;border-bottom:1px solid #eee;">{self._clean_text(insight.get('business_opportunity', ''))}</td>
+                <td style="padding:12px;border-bottom:1px solid #eee;">{self._clean_text(insight.get('business_angle', ''))}</td>
                 <td style="padding:12px;border-bottom:1px solid #eee;text-align:center;">
                     <span style="background:{priority_color};color:white;padding:4px 8px;border-radius:4px;font-size:12px;">
                         {priority}

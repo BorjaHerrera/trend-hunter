@@ -51,8 +51,6 @@ class EmailReporter:
         except Exception as e:
             logger.error(f"Error enviando email: {e}")
             logger.error(f"Error type: {type(e)}")
-            body_bytes = body.encode('utf-8')
-            logger.error(f"Primeros 50 chars del body: {repr(body[:50])}")
 
     def _build_html(self, insights_df: pd.DataFrame, trends_df: pd.DataFrame) -> str:
         today = datetime.now().strftime("%d-%m-%Y")
@@ -83,6 +81,8 @@ class EmailReporter:
                 </td>
             </tr>
             """
+
+        rows_html = rows_html.encode('ascii', 'xmlcharrefreplace').decode('ascii')
 
         return f"""
         <html>

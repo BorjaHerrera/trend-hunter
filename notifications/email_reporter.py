@@ -37,6 +37,9 @@ class EmailReporter:
             msg["From"] = self.sender
             msg["To"] = self.recipient
             msg.attach(MIMEText(body, "html", "utf-8"))
+            
+            logger.error(f"FROM: {repr(self.sender)}")
+            logger.error(f"TO: {repr(self.recipient)}")
 
             with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
                 server.login(self.sender, self.password)

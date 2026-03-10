@@ -58,7 +58,7 @@ class TrendHunterAgent:
 
         logger.info(f"Total tendencias tras limpieza: {len(evolved)}")
         self.db.save_trends(evolved, self.industry)
-        insights = self.enricher.enrich(evolved, self.industry, top_n=15)
+        insights = self.enricher.enrich(evolved, self.industry, top_n=30)
         
         try:
             self.sheets.export_daily_insights(evolved, insights)

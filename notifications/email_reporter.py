@@ -1,7 +1,6 @@
-import smtplib
+import yagmail
 import logging
 import pandas as pd
-from email.message import EmailMessage
 from datetime import datetime
 from config.settings import EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_RECIPIENT
 
@@ -30,16 +29,8 @@ class EmailReporter:
             subject = f"Trend Hunter Report {datetime.now().strftime('%d-%m-%Y')}"
             body = self._build_html(top_insights, trends_df)
 
-            msg = EmailMessage()
-            msg["Subject"] = subject
-            msg["From"] = self.sender
-            msg["To"] = self.recipient
-            msg.set_content("Trend Hunter Report")
-            msg.add_alternative(body, subtype="html")
-
-            with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-                server.login(self.sender, self.password)
-                server.send_message(msg)
+            yag = yagmail.SMTP(self.sender, self.password)
+            yag.send(to=self.recipient, subject=subject, contents=body)
 
             logger.info(f"Email enviado a {self.recipient}")
 
@@ -77,9 +68,7 @@ class EmailReporter:
             </tr>
             """
 
-        rows_html = rows_html.encode('ascii', 'xmlcharrefreplace').decode('ascii')
-
-        html = f"""
+        return f"""
         <html>
         <body style="font-family:Arial,sans-serif;max-width:900px;margin:0 auto;padding:20px;">
             <h1 style="color:#2c3e50;">Trend Hunter Report</h1>
@@ -104,5 +93,3 @@ class EmailReporter:
         </body>
         </html>
         """
-
-        return html.encode('ascii', 'xmlcharrefreplace').decode('ascii')

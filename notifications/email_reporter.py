@@ -27,6 +27,13 @@ class EmailReporter:
         try:
             if insights_df.empty:
                 logger.warning("No hay insights para enviar")
+                yag = yagmail.SMTP(self.sender, self.password)
+                yag.send(
+                    to=self.recipient,
+                    subject=self._clean_text(f"Trend Hunter Report {datetime.now().strftime('%d-%m-%Y')} - Sin tendencias"),
+                    contents="<html><body style='font-family:Arial,sans-serif;padding:20px;'><p>Hoy no se han encontrado tendencias relevantes.</p><p>Mañana lo intentará de nuevo.</p></body></html>",
+                )
+                logger.info(f"Email de aviso enviado a {self.recipient}")
                 return
 
             top_insights = insights_df.head(top_n)

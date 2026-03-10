@@ -5,6 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import datetime
 from config.settings import EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_RECIPIENT
+from email.policy import SMTP
 
 logger = logging.getLogger(__name__)
 
@@ -41,12 +42,16 @@ class EmailReporter:
             logger.info(f"TO: {repr(self.recipient)}")
             logger.info(f"SUBJECT: {repr(subject)}")
 
-            serialized = msg.as_string()
+            serialized = msg.as_bytes(policy=SMTP)
             logger.info(f"Contexto pos 25-40: {repr(serialized[25:40])}")
 
             with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
                 server.login(self.sender, self.password)
-                server.send_message(msg)
+                server.sendmail(
+                    self.sender,
+                    self.recipient,
+                    serialized
+                )
 
             logger.info(f"Email enviado a {self.recipient}")
 

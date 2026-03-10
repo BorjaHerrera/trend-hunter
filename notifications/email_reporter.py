@@ -1,5 +1,6 @@
 import yagmail
 import logging
+import traceback
 import pandas as pd
 from datetime import datetime
 from config.settings import EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_RECIPIENT
@@ -29,7 +30,7 @@ class EmailReporter:
                 return
 
             top_insights = insights_df.head(top_n)
-            subject = f"Trend Hunter Report {datetime.now().strftime('%d-%m-%Y')}"
+            subject = self._clean_text(f"Trend Hunter Report {datetime.now().strftime('%d-%m-%Y')}")
             body = self._build_html(top_insights, trends_df)
 
             yag = yagmail.SMTP(self.sender, self.password)
@@ -40,6 +41,7 @@ class EmailReporter:
         except Exception as e:
             logger.error(f"Error enviando email: {e}")
             logger.error(f"Error type: {type(e)}")
+            logger.error(traceback.format_exc())
 
     def _build_html(self, insights_df: pd.DataFrame, trends_df: pd.DataFrame) -> str:
         today = datetime.now().strftime("%d-%m-%Y")

@@ -59,8 +59,13 @@ class TrendHunterAgent:
         logger.info(f"Total tendencias tras limpieza: {len(evolved)}")
         self.db.save_trends(evolved, self.industry)
         insights = self.enricher.enrich(evolved, self.industry, top_n=15)
-        self.sheets.export_daily_insights(evolved, insights)
-        self.email.send_daily_report(insights, evolved)
+        
+        try:
+            self.sheets.export_daily_insights(evolved, insights)
+        except Exception as e:
+            logger.error(f"Error exportando a Sheets: {e}")
+
+        self.email.send_daily_report(insights, evolved, top_n=10)
         return evolved, insights
 
 

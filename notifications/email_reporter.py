@@ -3,7 +3,6 @@ import logging
 import pandas as pd
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.header import Header
 from datetime import datetime
 from config.settings import EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_RECIPIENT
 
@@ -33,13 +32,17 @@ class EmailReporter:
             body = self._build_html(top_insights, trends_df)
 
             msg = MIMEMultipart("alternative")
-            msg["Subject"] = Header(subject, "utf-8")
-            msg["From"] = self.sender
-            msg["To"] = self.recipient
+            msg["Subject"] = subject.encode('ascii', 'ignore').decode('ascii')
+            msg["From"] = self.sender.encode('ascii', 'ignore').decode('ascii')
+            msg["To"] = self.recipient.encode('ascii', 'ignore').decode('ascii')
             msg.attach(MIMEText(body, "html", "utf-8"))
 
             logger.info(f"FROM: {repr(self.sender)}")
             logger.info(f"TO: {repr(self.recipient)}")
+            logger.info(f"SUBJECT: {repr(subject)}")
+
+            serialized = msg.as_string()
+            logger.info(f"Contexto pos 25-40: {repr(serialized[25:40])}")
 
             with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
                 server.login(self.sender, self.password)

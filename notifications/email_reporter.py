@@ -17,7 +17,10 @@ class EmailReporter:
     def _clean_text(self, text: str) -> str:
         if not text:
             return ""
-        return str(text).replace("\xa0", " ").replace("\u2019", "'").replace("\u2014", "-")
+        text = str(text)
+        text = text.replace("\xa0", " ").replace("\u2019", "'").replace("\u2014", "-")
+        text = text.replace("\u2013", "-").replace("\u2018", "'").replace("\u201c", '"').replace("\u201d", '"')
+        return text.encode("ascii", "xmlcharrefreplace").decode("ascii")
 
     def send_daily_report(self, insights_df: pd.DataFrame, trends_df: pd.DataFrame, top_n: int = 10):
         try:
@@ -44,11 +47,11 @@ class EmailReporter:
 
         for _, insight in insights_df.iterrows():
             trend_data = trends_df[trends_df["trend"] == insight["trend"]]
-            rank = trend_data.iloc[0].get("trend_rank", "-") if not trend_data.empty else "-"
-            stage = trend_data.iloc[0].get("trend_stage", "-") if not trend_data.empty else "-"
+            rank = self._clean_text(trend_data.iloc[0].get("trend_rank", "-") if not trend_data.empty else "-")
+            stage = self._clean_text(trend_data.iloc[0].get("trend_stage", "-") if not trend_data.empty else "-")
             movement = trend_data.iloc[0].get("movement", 0) if not trend_data.empty else 0
             movement_str = f"up +{movement}" if movement > 0 else f"down {movement}" if movement < 0 else "= 0"
-            priority = insight.get("priority_level", "BAJA")
+            priority = self._clean_text(insight.get("priority_level", "BAJA"))
             priority_color = "#e74c3c" if priority == "ALTA" else "#f39c12" if priority == "MEDIA" else "#95a5a6"
 
             rows_html += f"""
@@ -88,7 +91,7 @@ class EmailReporter:
                 </tbody>
             </table>
             <p style="color:#bbb;font-size:12px;margin-top:30px;">
-                Generado automaticamente por Trend Hunter Agent
+                Generado automaticamente por Trend Hunter Agent 
             </p>
         </body>
         </html>

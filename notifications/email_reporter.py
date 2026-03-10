@@ -11,9 +11,9 @@ logger = logging.getLogger(__name__)
 class EmailReporter:
 
     def __init__(self):
-        self.sender = EMAIL_SENDER.strip()
-        self.password = EMAIL_PASSWORD.strip()
-        self.recipient = EMAIL_RECIPIENT.strip()
+        self.sender = EMAIL_SENDER.strip().replace("\xa0", " ")
+        self.password = EMAIL_PASSWORD.strip().replace("\xa0", " ").replace(" ", "")
+        self.recipient = EMAIL_RECIPIENT.strip().replace("\xa0", " ")
 
     def _clean_text(self, text: str) -> str:
         if not text:

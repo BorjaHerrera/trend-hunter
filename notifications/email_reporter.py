@@ -1,11 +1,9 @@
 import smtplib
 import logging
 import pandas as pd
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+from email.message import EmailMessage
 from datetime import datetime
 from config.settings import EMAIL_SENDER, EMAIL_PASSWORD, EMAIL_RECIPIENT
-from email.policy import SMTP
 
 logger = logging.getLogger(__name__)
 
@@ -32,26 +30,16 @@ class EmailReporter:
             subject = f"Trend Hunter Report {datetime.now().strftime('%d-%m-%Y')}"
             body = self._build_html(top_insights, trends_df)
 
-            msg = MIMEMultipart("alternative")
-            msg["Subject"] = subject.encode('ascii', 'ignore').decode('ascii')
-            msg["From"] = self.sender.encode('ascii', 'ignore').decode('ascii')
-            msg["To"] = self.recipient.encode('ascii', 'ignore').decode('ascii')
-            msg.attach(MIMEText(body, "html", "utf-8"))
-
-            logger.info(f"FROM: {repr(self.sender)}")
-            logger.info(f"TO: {repr(self.recipient)}")
-            logger.info(f"SUBJECT: {repr(subject)}")
-
-            serialized = msg.as_bytes(policy=SMTP)
-            logger.info(f"Contexto pos 25-40: {repr(serialized[25:40])}")
+            msg = EmailMessage()
+            msg["Subject"] = subject
+            msg["From"] = self.sender
+            msg["To"] = self.recipient
+            msg.set_content("Trend Hunter Report")
+            msg.add_alternative(body, subtype="html")
 
             with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
                 server.login(self.sender, self.password)
-                server.sendmail(
-                    self.sender,
-                    self.recipient,
-                    serialized
-                )
+                server.send_message(msg)
 
             logger.info(f"Email enviado a {self.recipient}")
 

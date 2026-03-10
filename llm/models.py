@@ -8,4 +8,4 @@ class TrendInsight:
     business_opportunity: Optional[str] = None
     business_angle: Optional[str] = None
     priority_level: Optional[str] = None
-    llm_relevance_score: float = 0.0
+    llm_relevance_score: float = 0.0  
